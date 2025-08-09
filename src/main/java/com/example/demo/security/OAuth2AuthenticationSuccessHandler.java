@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
+//import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
@@ -26,12 +26,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         Cookie cookie = new Cookie("accessToken", token);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        // cookie.setSecure(true); // 本番環境(HTTPS)ではこの行を有効にする
+        cookie.setSecure(true); // 本番環境(HTTPS)ではこの行を有効にする
         cookie.setMaxAge(60 * 60); // 1時間
         response.addCookie(cookie);
 
         // フロントエンドのダッシュボードなど、ログイン後のページにリダイレクト
-        String targetUrl = "http://localhost:3000/dashboard";
+//        String targetUrl = "http://localhost:3000/dashboard";
+        String targetUrl = "/login-seccess";
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
