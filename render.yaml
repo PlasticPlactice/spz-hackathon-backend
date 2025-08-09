@@ -17,14 +17,14 @@ services:
         value: production
       # 修正箇所: Spring Bootが認識できるキーに変更し、'jdbc:' を追加
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:${spz_hackathon_db.connectionString}
+        value: jdbc:${spz-hackathon-db.connectionString}
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
-          name: spz_hackathon_db
+          name: spz-hackathon-db
           property: user
       - key: SPRING_DATASOURCE_PASSWORD
         fromDatabase:
-          name: spz_hackathon_db
+          name: spz-hackathon-db
           property: password
       # GitHubやGeminiのAPIキーも、RenderのSecretsに設定する
       - key: GITHUB_API_TOKEN
