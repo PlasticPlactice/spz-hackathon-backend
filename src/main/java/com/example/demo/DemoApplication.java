@@ -1,13 +1,13 @@
-package hackathon.backend.spzhackathon;
+package com.example.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpzHackathonApplication {
+public class DemoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpzHackathonApplication.class, args);
+        SpringApplication.run(DemoApplication.class, args);
     }
 
 }

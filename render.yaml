@@ -1,0 +1,40 @@
+services:
+  # Spring Bootアプリケーションの定義
+  - type: web
+    name: spz-hackathon-backend
+    runtime: docker
+    plan: free
+    # Dockerfileの場所を指定
+    dockerfilePath: ./Dockerfile
+
+    # ヘルスチェック設定
+    healthCheckPath: /actuator/health
+
+    # 環境変数
+    envVars:
+      # 修正箇所: 本番用のプロファイルを明示的に指定
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      # 修正箇所: Spring Bootが認識できるキーに変更し、'jdbc:' を追加
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:${spz_hackathon_db.connectionString}
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: spz_hackathon_db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: spz_hackathon_db
+          property: password
+      # GitHubやGeminiのAPIキーも、RenderのSecretsに設定する
+      - key: GITHUB_API_TOKEN
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+
+databases:
+  # PostgreSQLデータベースの定義
+  - name: spz_hackathon_db
+    databaseName: spz_hackathon_db
+    user: spz_hackathon_db_user
+    plan: free
