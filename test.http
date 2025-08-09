@@ -1,5 +1,5 @@
 @accessToken = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxNDYzOTk0MzQiLCJ1c2VybmFtZSI6IlBsYXN0aWNQbGFjdGljZSIsImlhdCI6MTc1NDc0MDU0MCwiZXhwIjoxNzU0NzQ0MTQwfQ.oypMQN0ZrwjoEHSn_GO6n573VyfhLHD1XE7WlCbDuuIaMJTvn8LMoGC28Lx_VS08
-### 新しい開発ログを作成 (POST)
+###
 
 
 POST http://localhost:8080/api/devlogs?access_token={{accessToken}}
