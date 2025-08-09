@@ -35,6 +35,6 @@ services:
 databases:
   # PostgreSQLデータベースの定義
   - name: spz-hackathon-db
-    databaseName: spz-hackathon-db
+    databaseName: spz_hackathon_db
     user: spz_hackathon_db_user
     plan: free
