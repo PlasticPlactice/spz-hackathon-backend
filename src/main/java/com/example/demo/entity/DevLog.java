@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -37,15 +38,29 @@ public class DevLog {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    // データベースの列名と一致させるために@Columnアノテーションを追加
+    @Column(name = "log_date")
     private LocalDate logDate;
 
+    @Column(name = "keep_content")
     private String keepContent;
+
+    @Column(name = "problem_content")
     private String problemContent;
+
+    @Column(name = "try_content")
     private String tryContent;
+
+    @Column(name = "goal_content")
     private String goalContent;
 
+    @Column(name = "created_at")
     private ZonedDateTime createdAt;
+
+    @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
+
+    @Column(name = "deleted_at")
     private ZonedDateTime deletedAt;
 
     /**

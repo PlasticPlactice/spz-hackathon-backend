@@ -38,7 +38,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorize -> authorize
                         // ★★★ 修正箇所: /login-successへのアクセスを認証なしで許可 ★★★
-                        .requestMatchers("/login-success", "/oauth2/**").permitAll()
+                        .requestMatchers("/login-success", "/oauth2/**", "/api/devlogs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
