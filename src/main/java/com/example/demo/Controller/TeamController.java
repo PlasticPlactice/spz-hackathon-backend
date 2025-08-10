@@ -2,6 +2,7 @@ package com.example.demo.Controller;
 
 import com.example.demo.entity.Team;
 import com.example.demo.repository.TeamRepository;
+import org.springframework.http.MediaType; // MediaTypeをインポート
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -21,7 +22,7 @@ public class TeamController {
     }
 
     // CREATE: 新しいチームを作成します。
-    @PostMapping
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Team createTeam(@RequestBody Team team) {
         // 現在のタイムスタンプを設定し、保存します。
         team.setCreatedAt(java.time.OffsetDateTime.now());
@@ -30,20 +31,20 @@ public class TeamController {
     }
 
     // READ: 全てのチームを取得します。
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Team> getAllTeams() {
         return teamRepository.findAll();
     }
 
     // READ: IDを指定してチームを取得します。
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Team> getTeamById(@PathVariable Long id) {
         Optional<Team> team = teamRepository.findById(id);
         return team.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     // UPDATE: 既存のチームを更新します。
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Team> updateTeam(@PathVariable Long id, @RequestBody Team teamDetails) {
         Optional<Team> optionalTeam = teamRepository.findById(id);
         if (optionalTeam.isPresent()) {
