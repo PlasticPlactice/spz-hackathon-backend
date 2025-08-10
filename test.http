@@ -1,7 +1,5 @@
 @accessToken = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxNDYzOTk0MzQiLCJ1c2VybmFtZSI6IlBsYXN0aWNQbGFjdGljZSIsImlhdCI6MTc1NDc0MDU0MCwiZXhwIjoxNzU0NzQ0MTQwfQ.oypMQN0ZrwjoEHSn_GO6n573VyfhLHD1XE7WlCbDuuIaMJTvn8LMoGC28Lx_VS08
 ###
-
-
 POST http://localhost:8080/api/devlogs?access_token={{accessToken}}
 Content-Type: application/json
 
@@ -18,26 +16,3 @@ Content-Type: application/json
 ### すべての開発ログを取得 (GET)
 GET http://localhost:8080/api/devlogs/1?access_token=eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxNDYzOTk0MzQiLCJ1c2VybmFtZSI6IlBsYXN0aWNQbGFjdGljZSIsImlhdCI6MTc1NDc0MDU0MCwiZXhwIjoxNzU0NzQ0MTQwfQ.oypMQN0ZrwjoEHSn_GO6n573VyfhLHD1XE7WlCbDuuIaMJTvn8LMoGC28Lx_VS08
 Accept: application/json
-
-### ID=1の開発ログを取得 (GET)
-GET http://localhost:8080/api/devlogs/1?access_token={{accessToken}}
-Accept: application/json
-
-### ID=1の開発ログを更新 (PUT)
-PUT http://localhost:8080/api/devlogs/1?access_token={{accessToken}}
-Content-Type: application/json
-
-{
-  "id": 1,
-  "logDate": "2024-05-21",
-  "keepContent": "要件定義が完了し、設計フェーズに入った。",
-  "problemContent": "データベースの設計に時間がかかった。",
-  "tryContent": "次回はER図を先に作成する。",
-  "goalContent": "APIのCRUD機能を全て完成させる。",
-  "user": { "id": 1 },
-  "project": { "id": 1 }
-}
-
-### ID=1の開発ログを削除 (DELETE)
-DELETE http://localhost:8080/api/devlogs/1?access_token={{accessToken}}
-Accept: */*
