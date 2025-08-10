@@ -1,0 +1,46 @@
+# TeamControllerのAPIをテストするためのリクエスト集
+
+# 変数定義: このトークンは認証が必要なAPIで使用します。
+# ログインAPIなどで取得した有効なトークンに置き換えてください。
+@accessToken = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxNDYzOTk0MzQiLCJ1c2VybmFtZSI6IlBsYXN0aWNQbGFjdGljZSIsImlhdCI6MTc1NDgwMDIzMSwiZXhwIjoxNzU0ODAzODMxfQ.-Woe2A1ncQ_NcE9fsH39IRHJv_qB0EfB5nqHeIg4Ttv27K7Gj68RGwiqyo3izOdL
+
+### 1. 新しいチームを作成 (POST)
+# ownerには既存のユーザーIDを指定する必要があります。
+POST http://localhost:8080/api/teams
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Dragon Team",
+  "owner": { "id": 1 }
+}
+
+### 2. 全てのチームを取得 (GET)
+GET http://localhost:8080/api/teams
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+
+### 3. IDを指定してチームを取得 (GET)
+# 上で作成したチームのID (例: 1) を指定します。
+GET http://localhost:8080/api/teams/1
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+
+### 4. チーム情報を更新 (PUT)
+# ID=1 のチーム名を "Phoenix Team" に変更します。
+PUT http://localhost:8080/api/teams/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Phoenix Team"
+}
+
+
+### 5. チームを削除 (DELETE)
+# ID=1 のチームを削除します。
+DELETE http://localhost:8080/api/teams/1
+Authorization: Bearer {{accessToken}}
+

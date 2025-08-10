@@ -1,6 +1,7 @@
-@accessToken = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxNDYzOTk0MzQiLCJ1c2VybmFtZSI6IlBsYXN0aWNQbGFjdGljZSIsImlhdCI6MTc1NDc0MDU0MCwiZXhwIjoxNzU0NzQ0MTQwfQ.oypMQN0ZrwjoEHSn_GO6n573VyfhLHD1XE7WlCbDuuIaMJTvn8LMoGC28Lx_VS08
+@accessToken = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxNDYzOTk0MzQiLCJ1c2VybmFtZSI6IlBsYXN0aWNQbGFjdGljZSIsImlhdCI6MTc1NDgwMDIzMSwiZXhwIjoxNzU0ODAzODMxfQ.-Woe2A1ncQ_NcE9fsH39IRHJv_qB0EfB5nqHeIg4Ttv27K7Gj68RGwiqyo3izOdL
 ###
-POST http://localhost:8080/api/devlogs?access_token={{accessToken}}
+POST http://localhost:8080/api/devlogs
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -14,5 +15,6 @@ Content-Type: application/json
 }
 
 ### すべての開発ログを取得 (GET)
-GET http://localhost:8080/api/devlogs/1?access_token=eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxNDYzOTk0MzQiLCJ1c2VybmFtZSI6IlBsYXN0aWNQbGFjdGljZSIsImlhdCI6MTc1NDc0MDU0MCwiZXhwIjoxNzU0NzQ0MTQwfQ.oypMQN0ZrwjoEHSn_GO6n573VyfhLHD1XE7WlCbDuuIaMJTvn8LMoGC28Lx_VS08
+GET http://localhost:8080/api/devlogs
+Authorization: Bearer {{accessToken}}
 Accept: application/json

@@ -1,8 +1,10 @@
 package com.example.demo.Service;
 
+import com.example.demo.dto.AnalysisDto;
 import com.example.demo.dto.AnalysisResponse;
 import com.example.demo.entity.AnalysisCache;
 import com.example.demo.entity.AnalysisRequest;
+import com.example.demo.entity.User;
 import com.example.demo.repository.AnalysisCacheRepository;
 import com.example.demo.repository.AnalysisRequestRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,10 +16,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -30,6 +35,16 @@ public class AnalysisService {
     private final AnalysisCacheRepository cacheRepository;
     private final AnalysisRequestRepository requestRepository;
     private final ObjectMapper objectMapper;
+
+    public AnalysisService(WebClient.Builder webClientBuilder) {
+        this.githubWebClient = webClientBuilder.baseUrl("https://api.github.com").build();
+        this.geminiWebClient = webClientBuilder.clone()
+                .baseUrl("https://generativelanguage.googleapis.com")
+                .build();
+        this.cacheRepository = null;
+        this.requestRepository = null;
+        this.objectMapper = new ObjectMapper();
+    }
 
     @Value("${gemini.api.key}")
     private String geminiApiKey;
@@ -131,7 +146,7 @@ public class AnalysisService {
         GeminiRequest requestBody = new GeminiRequest(prompt);
 
         return geminiWebClient.post()
-                .uri("/v1beta/models/gemini-1.5-flash:generateContent")
+                .uri("/v1beta/models/gemini-2.0-flash-light:generateContent")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header("x-goog-api-key", this.geminiApiKey.trim()) // 認証エラーを解決したヘッダー方式
                 .bodyValue(requestBody)
@@ -158,7 +173,16 @@ public class AnalysisService {
     }
 
     private Mono<String> callGeminiApi(List<String> commitMessages) {
-        String prompt = "以下のGitコミットメッセージを分析し、開発の進捗や主な変更点を3つに要約してください。箇条書きで簡潔にお願いします。\n\n" + String.join("\n- ", commitMessages);
+        String prompt = "以下のGitコミットメッセージを分析し、次の4項目について日本語で箇条書きで簡潔にまとめてください。各項目は配列ではなく、1つのまとまった文章として返してください。\n" +
+                "1. 今週のハイライト\n" +
+                "2. おすすめの改善点\n" +
+                "3. トレンド分析\n" +
+                "4. 今週の総評\n" +
+                "\n【出力例】\n" +
+                "今週のハイライト\n機能追加をリードした1週間でした。特にユーザー認証機能の実装で高い貢献度を示しています。\n\n" +
+                "おすすめの改善点\n次はコードレビューにも挑戦してみましょう。チーム全体のコード品質向上に貢献できます。\n\n" +
+                "トレンド分析\nバックエンド開発に集中していますが、フロントエンドスキルも伸ばすとフルスタック開発者として成長できます。\n\n" +
+                "今週の総評\n全体的に活発な開発活動を行っています。特に機能追加において優れた成果を上げており、チームの主要な貢献者として活躍しています。継続的な成長が期待できます。\n";
         return executeGeminiCall(prompt);
     }
 
@@ -198,5 +222,95 @@ public class AnalysisService {
         return StreamSupport.stream(commitsArray.spliterator(), false)
                 .map(commit -> commit.path("commit").path("message").asText())
                 .collect(Collectors.toList());
+    }
+
+    public Mono<AnalysisDto> analyzeUserActivity(User user, int durationDays) {
+        // GitHub APIを呼び出す (ユーザーのトークンを使用)
+        return fetchAllEvents(user)
+                .takeWhile(event -> {
+                    // イベントの日付が期間内か判定
+                    String createdAt = event.path("created_at").asText("");
+                    if (createdAt.isEmpty()) return true;
+                    LocalDate eventDate = LocalDate.parse(createdAt.substring(0, 10));
+                    return !eventDate.isBefore(LocalDate.now().minusDays(durationDays));
+                })
+                .collectList()
+                .flatMap(events -> {
+                    // PushEventのみ抽出し、コミット詳細取得
+                    List<JsonNode> pushEvents = events.stream()
+                            .filter(event -> "PushEvent".equals(event.path("type").asText()))
+                            .toList();
+                    return Flux.fromIterable(pushEvents)
+                            .flatMap(this::getCommitDetails)
+                            .collectList()
+                            .map(commitDetails -> buildAnalysisDto(events, commitDetails, durationDays));
+                });
+    }
+
+    private Flux<JsonNode> fetchAllEvents(User user) {
+        // ページネーション対応（最大300件まで取得）
+        return Flux.range(1, 3)
+                .concatMap(page -> githubWebClient.get()
+                        .uri(uriBuilder -> uriBuilder
+                                .path("/users/{username}/events/public")
+                                .queryParam("per_page", 100)
+                                .queryParam("page", page)
+                                .build(user.getUsername()))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + user.getGithubAccessToken())
+                        .retrieve()
+                        .bodyToFlux(JsonNode.class)
+                )
+                .flatMap(Flux::fromIterable);
+    }
+
+    private Mono<JsonNode> getCommitDetails(JsonNode pushEvent) {
+        // PushEventのpayload.commits配列からコミットメッセージやファイル情報を抽出
+        // ここではpayload.commitsをそのまま返す
+        JsonNode commits = pushEvent.path("payload").path("commits");
+        if (commits.isArray()) {
+            // 1つのPushEventに複数コミットが含まれる
+            return Mono.just(commits);
+        }
+        return Mono.empty();
+    }
+
+    private AnalysisDto buildAnalysisDto(List<JsonNode> events, List<JsonNode> commitDetails, int durationDays) {
+        // コミット集計
+        long totalCommits = 0;
+        long featureCommits = 0;
+        long fixCommits = 0;
+        int backend = 0, frontend = 0, other = 0;
+
+        for (JsonNode commitsArray : commitDetails) {
+            for (JsonNode commit : commitsArray) {
+                totalCommits++;
+                String msg = commit.path("message").asText("").toLowerCase();
+                if (msg.contains("feature") || msg.contains("add") || msg.contains("implement")) featureCommits++;
+                if (msg.contains("fix") || msg.contains("bug")) fixCommits++;
+                // ファイルパスやリポジトリ名から分布を推定（例: ファイル名にfrontend, backendが含まれる場合）
+                String url = commit.path("url").asText("");
+                if (url.contains("frontend")) frontend++;
+                else if (url.contains("backend")) backend++;
+                else other++;
+            }
+        }
+        int sum = backend + frontend + other;
+        List<Map<String, Object>> workDist = List.of(
+                Map.of("area", "Backend", "percentage", sum > 0 ? backend * 100 / sum : 0),
+                Map.of("area", "Frontend", "percentage", sum > 0 ? frontend * 100 / sum : 0),
+                Map.of("area", "Other", "percentage", sum > 0 ? other * 100 / sum : 0)
+        );
+        return AnalysisDto.builder()
+                .startDate(LocalDate.now().minusDays(durationDays).toString())
+                .endDate(LocalDate.now().toString())
+                .weeklyTrend(AnalysisDto.WeeklyTrend.builder()
+                        .totalCommits(totalCommits)
+                        .featureCommits(featureCommits)
+                        .fixCommits(fixCommits)
+                        .build())
+                .developmentTendency(AnalysisDto.DevelopmentTendency.builder()
+                        .workDistribution(workDist)
+                        .build())
+                .build();
     }
 }

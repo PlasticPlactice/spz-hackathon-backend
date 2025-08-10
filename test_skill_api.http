@@ -1,0 +1,37 @@
+# スキルAPIテスト
+@accessToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTMxNTU4MDEiLCJ1c2VybmFtZSI6IklzaGlrYXdhTWFzYXRvIiwiaWF0IjoxNzU0Nzg0MzgyLCJleHAiOjE3NTQ3ODc5ODJ9.MHsFZqEeapkQM521jSb09hJEMn5Rn_maSxephzxOfAc
+
+### スキル一覧取得
+GET http://localhost:8080/api/me/skills
+Authorization: Bearer {{accessToken}}
+
+### スキル追加
+POST http://localhost:8080/api/me/skills
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "JavaScript",
+  "category": "プログラミング",
+  "proficiency": 90,
+  "level": "上級"
+}
+
+### スキル更新
+PUT http://localhost:8080/api/me/skills/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "proficiency": 95,
+  "level": "最上級"
+}
+
+### スキル削除
+DELETE http://localhost:8080/api/me/skills/1
+Authorization: Bearer {{accessToken}}
+
+### 未認証時の動作確認
+GET http://localhost:8080/api/me/skills
+Authorization: Bearer invalid_token
+

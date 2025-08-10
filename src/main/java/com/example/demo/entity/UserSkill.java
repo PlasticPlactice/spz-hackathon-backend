@@ -7,39 +7,33 @@ import lombok.Setter;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user_skills")
 @Getter
 @Setter
-public class User {
+public class UserSkill {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "github_id", unique = true, nullable = false)
-    private Long githubId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "skill_id", nullable = false)
+    private Skill skill;
 
     @Column(nullable = false)
-    private String username;
+    private Integer proficiency;
 
-    @Column(name = "avatar_url")
-    private String avatarUrl;
-
-    @Column(name = "github_access_token", nullable = false)
-    private String githubAccessToken; // 注意: 暗号化して保存すること
-
-    private String department;
-    private String jobTitle;
-    private String selfIntroduction;
+    private String level;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
-
-    @Column(name = "deleted_at")
-    private OffsetDateTime deletedAt;
 
     @PrePersist
     protected void onCreate() {

@@ -1,0 +1,39 @@
+# スキル登録・取得のJSONレスポンス確認用
+# 1. ここに最新のaccessTokenを貼り付けてください
+@accessToken =eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTMxNTU4MDEiLCJ1c2VybmFtZSI6IklzaGlrYXdhTWFzYXRvIiwiaWF0IjoxNzU0Nzg0MzgyLCJleHAiOjE3NTQ3ODc5ODJ9.MHsFZqEeapkQM521jSb09hJEMn5Rn_maSxephzxOfAc
+
+### スキル追加
+POST http://localhost:8080/api/me/skills
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "TypeScript",
+  "category": "プログラミング",
+  "proficiency": 85,
+  "level": "中級"
+}
+
+### スキル一覧取得
+GET http://localhost:8080/api/me/skills
+Authorization: Bearer {{accessToken}}
+
+### スキル追加（重複チェック用）
+POST http://localhost:8080/api/me/skills
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "TypeScript",
+  "category": "プログラミング",
+  "proficiency": 90,
+  "level": "上級"
+}
+
+### スキル一覧取得（再確認）
+GET http://localhost:8080/api/me/skills
+Authorization: Bearer {{accessToken}}
+
+### 未認証時の動作確認
+GET http://localhost:8080/api/me/skills
+Authorization: Bearer {{accessToken}}

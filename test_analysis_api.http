@@ -1,0 +1,17 @@
+# 分析APIテスト
+@accessToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTMxNTU4MDEiLCJ1c2VybmFtZSI6IklzaGlrYXdhTWFzYXRvIiwiaWF0IjoxNzU0Nzg0MzgyLCJleHAiOjE3NTQ3ODc5ODJ9.MHsFZqEeapkQM521jSb09hJEMn5Rn_maSxephzxOfAc
+
+### Gemini APIテスト
+GET http://localhost:8080/api/analysis/test-gemini
+Authorization: Bearer {{accessToken}}
+
+### ユーザーアクティビティ分析
+GET http://localhost:8080/api/analysis?duration=7
+Authorization: Bearer {{accessToken}}
+
+### リポジトリコミット分析
+POST http://localhost:8080/api/repositories/IshikawaMasato/React-ToDo/analysis
+Authorization: Bearer {{accessToken}}
+
+# {owner} と {repo} を実際のリポジトリ名に置き換えてください
+

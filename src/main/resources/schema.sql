@@ -9,6 +9,9 @@ CREATE TABLE users (
                        department VARCHAR(255), -- プロフィール用の部署名
                        job_title VARCHAR(255), -- プロフィール用の役職名
                        self_introduction TEXT, -- プロフィール用の自己紹介文
+                       email VARCHAR(255), -- メールアドレス
+                       location VARCHAR(255), -- 所在地
+                       hire_date DATE, -- 入社日
                        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), -- レコード作成日時
                        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), -- レコード更新日時
                        deleted_at TIMESTAMPTZ -- 論理削除日時 (NULLは未削除)
@@ -113,3 +116,14 @@ CREATE TABLE analysis_caches (
 );
 CREATE INDEX idx_analysis_caches_analyzed_at ON analysis_caches(analyzed_at);
 
+-- 10. user_contributions テーブル
+CREATE TABLE user_contributions (
+                                    event_id VARCHAR(255) PRIMARY KEY, -- GitHubイベントのID (主キー)
+                                    user_id BIGINT NOT NULL REFERENCES users(id), -- ユーザーのID (usersテーブルのID)
+                                    event_type VARCHAR(255) NOT NULL, -- イベントの種類 ('PushEvent', 'IssuesEvent' など)
+                                    repo_name VARCHAR(255) NOT NULL, -- リポジトリ名
+                                    created_at TIMESTAMPTZ NOT NULL -- イベントの発生日時
+);
+
+CREATE INDEX idx_user_contributions_user_id ON user_contributions(user_id);
+CREATE INDEX idx_user_contributions_created_at ON user_contributions(created_at);

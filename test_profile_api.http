@@ -1,0 +1,25 @@
+# ユーザープロフィールAPIテスト
+# 最新のaccessTokenを貼り付けてください
+@accessToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTMxNTU4MDEiLCJ1c2VybmFtZSI6IklzaGlrYXdhTWFzYXRvIiwiaWF0IjoxNzU0Nzg0MzgyLCJleHAiOjE3NTQ3ODc5ODJ9.MHsFZqEeapkQM521jSb09hJEMn5Rn_maSxephzxOfAc
+
+### プロフィール取得
+GET http://localhost:8080/api/me
+Authorization: Bearer {{accessToken}}
+
+### プロフィール更新
+PUT http://localhost:8080/api/me
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "username": "IshikawaMasato",
+  "department": "開発部",
+  "jobTitle": "エンジニア",
+  "selfIntroduction": "自己紹介文をここに記載",
+  "email": "example@example.com",
+  "location": "Tokyo"
+}
+
+### 未認証時の動作確認
+GET http://localhost:8080/api/me
+Authorization: Bearer invalid_token

@@ -1,0 +1,35 @@
+#Analysis API テスト用 HTTPリクエスト
+@accessToken = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxMTMxNTU4MDEiLCJ1c2VybmFtZSI6IklzaGlrYXdhTWFzYXRvIiwiaWF0IjoxNzU0NzU4MTYyLCJleHAiOjE3NTQ3NjE3NjJ9.epQiIcuIFyxtrOnGeVjCBsxkYLLGNuWMhsXDRbG8R8ZbDNdjstpVYSLGiKJaEAy4
+@owner = IshikawaMasato
+@repo = React_ToDo
+
+###
+# 1. コミット分析リクエスト
+POST http://localhost:8080/api/repositories/{{owner}}/{{repo}}/analysis
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+###
+
+# 2. Geminiテスト用エンドポイント
+GET http://localhost:8080/api/analysis/test-gemini
+Authorization: Bearer {{accessToken}}
+
+###
+
+# 3. ユーザーアクティビティ分析取得（デフォルト7日間）
+GET http://localhost:8080/api/analysis
+Authorization: Bearer {{accessToken}}
+
+###
+
+# 4. ユーザーアクティビティ分析取得（日数指定例: 30日間）
+GET http://localhost:8080/api/analysis?duration=30
+Authorization: Bearer {{accessToken}}
+
+###
+
+# 変数例
+# @owner = your-github-username
+# @repo = your-repository
+# @accessToken = xxxxxxxx

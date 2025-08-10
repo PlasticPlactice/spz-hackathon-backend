@@ -23,22 +23,21 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         String token = tokenProvider.createToken(authentication);
 
-        // ★★★ 修正箇所: ResponseCookieビルダーを使い、SameSite属性を明示的に設定 ★★★
-        ResponseCookie cookie = ResponseCookie.from("accessToken", token)
+        // ★★★ 修正箇所: 正しいビルダーのクラス名に変更 ★★★
+        ResponseCookie.ResponseCookieBuilder cookieBuilder = ResponseCookie.from("accessToken", token)
                 .httpOnly(true)
-                .secure(true)       // HTTPSでのみ送信
                 .path("/")
-                .maxAge(Duration.ofHours(1))
-                .sameSite("None")   // クロスサイトリクエストでもCookieを送信
-                .build();
+                .maxAge(Duration.ofHours(1));
 
+        boolean isSecure = request.isSecure() || "https".equalsIgnoreCase(request.getHeader("X-Forwarded-Proto"));
+        if (isSecure) {
+            cookieBuilder.secure(true).sameSite("None");
+        }
+
+        ResponseCookie cookie = cookieBuilder.build();
         response.addHeader("Set-Cookie", cookie.toString());
 
-        response.setContentType("text/html; charset=UTF-8");
-        response.getWriter().write("""
-               <h1>Login Successful!</h1>
-               <p>You can now close this page.</p>
-               <p>The accessToken cookie has been set in your browser.</p>
-               """);
+        String targetUrl = "http://localhost:3000/dashboard";
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }

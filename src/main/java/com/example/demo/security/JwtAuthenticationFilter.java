@@ -33,6 +33,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest request) {
+        // 1. Authorizationヘッダー（Bearer）から取得
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.trim().toLowerCase().startsWith("bearer ")) {
+            // 大文字・小文字・前後スペースを許容し、正しくトークンを抽出
+            return bearerToken.trim().substring(7).trim();
+        }
+        // 2. Cookieから取得（従来通り）
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             return null;

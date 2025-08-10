@@ -30,7 +30,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String avatarUrl = (String) attributes.get("avatar_url");
         String accessToken = userRequest.getAccessToken().getTokenValue();
 
-        // DBにユーザーが存在するか確認し、存在しなければ新規登録、存在すれば情報を更新
         Optional<User> userOptional = userRepository.findByGithubId(githubId);
         User user;
         if (userOptional.isPresent()) {
@@ -38,15 +37,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user.setUsername(username);
             user.setAvatarUrl(avatarUrl);
             user.setGithubAccessToken(accessToken);
+            user.setUpdatedAt(java.time.OffsetDateTime.now());
         } else {
             user = new User();
             user.setGithubId(githubId);
             user.setUsername(username);
             user.setAvatarUrl(avatarUrl);
             user.setGithubAccessToken(accessToken);
+            user.setCreatedAt(java.time.OffsetDateTime.now());
+            user.setUpdatedAt(java.time.OffsetDateTime.now());
         }
-        userRepository.save(user);
-
+        System.out.println("[OAuth2UserService] Save user: " + user);
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            System.err.println("[OAuth2UserService] Failed to save user: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
         return oauth2User;
     }
 }

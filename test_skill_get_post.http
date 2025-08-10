@@ -1,0 +1,43 @@
+# スキル登録・取得APIの動作確認用
+# 1. ここに最新のaccessTokenを貼り付けてください
+@accessToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTMxNTU4MDEiLCJ1c2VybmFtZSI6IklzaGlrYXdhTWFzYXRvIiwiaWF0IjoxNzU0NzgzMjUwLCJleHAiOjE3NTQ3ODY4NTB9.lLEGnLNOJBaEuII6u0Hd94D1eC3JZ7wYGKBBMFFR0Jo
+
+### スキル1追加
+POST http://localhost:8080/api/me/skills
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Go",
+  "category": "プログラミング",
+  "proficiency": 70,
+  "level": "初級"
+}
+
+### スキル2追加
+POST http://localhost:8080/api/me/skills
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Python",
+  "category": "プログラミング",
+  "proficiency": 80,
+  "level": "中級"
+}
+
+### スキル3追加
+POST http://localhost:8080/api/me/skills
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "React",
+  "category": "フロントエンド",
+  "proficiency": 60,
+  "level": "初級"
+}
+
+### スキル一覧取得
+GET http://localhost:8080/api/me/skills
+Authorization: Bearer {{accessToken}}
